@@ -1,43 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Store Nepal</title>
+    <title>Your Store Nepal | Online Shopping</title>
     <style>
-        body { font-family: sans-serif; background-color: #f1f3f6; margin: 0; }
-        header { background: #2874f0; padding: 12px; color: white; display: flex; align-items: center; position: sticky; top: 0; }
-        .search-bar { background: white; flex: 1; margin: 0 10px; padding: 8px; border-radius: 2px; color: #999; font-size: 14px; }
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; }
-        .card { background: white; padding: 10px; text-align: center; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 140px; object-fit: contain; }
-        .p-name { font-size: 13px; color: #212121; margin: 8px 0; height: 32px; overflow: hidden; }
-        .p-price { font-weight: bold; font-size: 15px; }
-        .off { color: #388e3c; font-size: 12px; }
-        .btn { background: #fb641b; color: white; border: none; width: 100%; padding: 8px; margin-top: 8px; font-weight: bold; }
+        body { font-family: 'Roboto', Arial, sans-serif; background-color: #f1f3f6; margin: 0; padding-bottom: 20px; }
+        
+        /* Flipkart Style Header */
+        header { background: #2874f0; padding: 12px 15px; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .logo { font-weight: bold; font-size: 22px; font-style: italic; letter-spacing: 0.5px; }
+        
+        /* Search Bar */
+        .search-wrapper { background: white; display: flex; padding: 8px 12px; border-radius: 2px; align-items: center; }
+        .search-wrapper input { border: none; width: 100%; outline: none; font-size: 14px; color: #212121; }
+
+        /* Product Grid */
+        .main-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; max-width: 1000px; margin: auto; }
+        
+        /* Product Card */
+        .item-card { background: white; border-radius: 4px; padding: 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; }
+        .item-card img { width: 100%; height: 140px; object-fit: contain; margin-bottom: 10px; }
+        .item-name { font-size: 13px; color: #212121; height: 34px; overflow: hidden; line-height: 1.3; margin-bottom: 5px; font-weight: 500; }
+        .item-price { font-weight: bold; font-size: 16px; color: #212121; margin-bottom: 8px; }
+        .off-tag { color: #388e3c; font-size: 12px; font-weight: bold; }
+        
+        /* Buy Button */
+        .buy-now-btn { background: #fb641b; color: white; border: none; width: 100%; padding: 10px 0; border-radius: 2px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: 0.2s; }
+        .buy-now-btn:active { background: #e65a16; }
+
+        #empty-msg { text-align: center; padding: 50px; color: #878787; font-size: 16px; display: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight:bold; font-style:italic;">YourStore</div>
-    <div class="search-bar">Search for products...</div>
+    <div class="header-top">
+        <div class="logo">YourStore</div>
+        <div style="font-size: 12px;">Nepal</div>
+    </div>
+    <div class="search-wrapper">
+        <input type="text" id="searchBar" onkeyup="filterItems()" placeholder="Search from 100+ items...">
+    </div>
 </header>
 
-<div class="container">
-    <div class="card">
-        <img src="https://m.media-amazon.com/images/I/71p-D-l8XHL._SL1500_.jpg" alt="Perfume">
-        <div class="p-name">Premium Luxury Perfume</div>
-        <div class="p-price">Rs. 1,299 <span class="off">40% off</span></div>
-        <button class="btn">BUY NOW</button>
+<div id="empty-msg">Maafi chahte hain, ye item hamare paas nahi hai!</div>
+
+<div class="main-container" id="itemsList">
     </div>
 
-    <div class="card">
-        <img src="https://m.media-amazon.com/images/I/61S9A6K8fFL._SL1500_.jpg" alt="Perfume">
-        <div class="p-name">Strong Oud Fragrance</div>
-        <div class="p-price">Rs. 899 <span class="off">20% off</span></div>
-        <button class="btn">BUY NOW</button>
-    </div>
-</div>
+<script>
+    // 100 Items ka Data
+    const myProducts = [];
+    
+    // Yahan hum 100 products auto-generate kar rahe hain
+    // Aap 'name' aur 'price' ko manually badal sakte hain
+    for (let i = 1; i <= 100; i++) {
+        let category = (i <= 50) ? "Perfume" : "Item"; 
+        myProducts.push({
+            name: "Premium " + category + " No. " + i,
+            price: "Rs. " + (499 + (i * 15)),
+            discount: (10 + (i % 20)) + "% Off",
+            img: "https://via.placeholder.com/200x200?text=" + category + "+" + i,
+            waLink: "https://wa.me+9779761309663?text=I%20want%20to%20order%20Product%20" + i
+        });
+    }
+
+    const listDiv = document.getElementById('itemsList');
+    const emptyMsg = document.getElementById('empty-msg');
+
+    function showItems(data) {
+        listDiv.innerHTML = "";
+        if (data.length === 0) {
+            emptyMsg.style.display = "block";
+        } else {
+            emptyMsg.style.display = "none";
+            data.forEach(product => {
+                listDiv.innerHTML += `
+                    <div class="item-card">
+                        <img src="${product.img}" alt="Product Image">
+                        <div class="item-name">${product.name}</div>
+                        <div class="item-price">${product.price}</div>
+                        <div class="off-tag">${product.discount}</div>
+                        <a href="${product.waLink}" target="_blank" style="text-decoration:none;">
+                            <button class="buy-now-btn">BUY NOW</button>
+                        </a>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    function filterItems() {
+        let val = document.getElementById('searchBar').value.toLowerCase();
+        let matched = myProducts.filter(p => p.name.toLowerCase().includes(val));
+        showItems(matched);
+    }
+
+    // Initial load
+    showItems(myProducts);
+</script>
 
 </body>
 </html>
